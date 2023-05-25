@@ -2,9 +2,8 @@ import { MinusCircle, PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
 
-import Logo from '../../public/cover.jpg'
 
-interface SongProps {
+export interface SongProps {
   id: number
   src: any
   song: string
@@ -15,171 +14,12 @@ interface SongProps {
 }
 
 interface PlaylistType {
-  type: 'playlist' | 'recomendation'
+  type: 'playlist' | 'recomendation',
+  songsArray: SongProps[],
+  onAdd: (song: SongProps) => void;
 }
 
-export default function Music({ type }: PlaylistType) {
-  const songsArray: SongProps[] = [
-    {
-      id: 1,
-      src: Logo,
-      song: `Papi's Home`,
-      artist: 'Drake',
-      album: 'Certified Lover Boy',
-      genre: 'Rap',
-      duration: '3:51',
-    },
-
-    {
-      id: 2,
-      src: Logo,
-      song: `Search and Rescue`,
-      artist: 'Drake2',
-      album: 'Search and Rescue',
-      genre: 'Rap',
-      duration: '4:32',
-    },
-
-    {
-      id: 3,
-      src: Logo,
-      song: `All my life`,
-      artist: 'Lil Durk, J. Cole',
-      album: 'All my life',
-      genre: 'Trap',
-      duration: '3:43',
-    },
-
-    {
-      id: 4,
-      src: Logo,
-      song: `Trance`,
-      artist: 'Metro Booming',
-      album: 'HEROES & VILLAINS',
-      genre: 'Trap',
-      duration: '3:14',
-    },
-    {
-      id: 5,
-      src: Logo,
-      song: `Papi's Home`,
-      artist: 'Drake',
-      album: 'Certified Lover Boy',
-      genre: 'Rap',
-      duration: '3:51',
-    },
-
-    {
-      id: 6,
-      src: Logo,
-      song: `Search and Rescue`,
-      artist: 'Drake2',
-      album: 'Search and Rescue',
-      genre: 'Rap',
-      duration: '4:32',
-    },
-
-    {
-      id: 7,
-      src: Logo,
-      song: `All my life`,
-      artist: 'Lil Durk, J. Cole',
-      album: 'All my life',
-      genre: 'Trap',
-      duration: '3:43',
-    },
-
-    {
-      id: 8,
-      src: Logo,
-      song: `Trance`,
-      artist: 'Metro Booming',
-      album: 'HEROES & VILLAINS',
-      genre: 'Trap',
-      duration: '3:14',
-    },
-    {
-      id: 9,
-      src: Logo,
-      song: `Papi's Home`,
-      artist: 'Drake',
-      album: 'Certified Lover Boy',
-      genre: 'Rap',
-      duration: '3:51',
-    },
-
-    {
-      id: 10,
-      src: Logo,
-      song: `Search and Rescue`,
-      artist: 'Drake2',
-      album: 'Search and Rescue',
-      genre: 'Rap',
-      duration: '4:32',
-    },
-
-    {
-      id: 11,
-      src: Logo,
-      song: `All my life`,
-      artist: 'Lil Durk, J. Cole',
-      album: 'All my life',
-      genre: 'Trap',
-      duration: '3:43',
-    },
-
-    {
-      id: 12,
-      src: Logo,
-      song: `Trance`,
-      artist: 'Metro Booming',
-      album: 'HEROES & VILLAINS',
-      genre: 'Trap',
-      duration: '3:14',
-    },
-    {
-      id: 13,
-      src: Logo,
-      song: `Papi's Home`,
-      artist: 'Drake',
-      album: 'Certified Lover Boy',
-      genre: 'Rap',
-      duration: '3:51',
-    },
-
-    {
-      id: 14,
-      src: Logo,
-      song: `Search and Rescue`,
-      artist: 'Drake2',
-      album: 'Search and Rescue',
-      genre: 'Rap',
-      duration: '4:32',
-    },
-
-    {
-      id: 15,
-      src: Logo,
-      song: `All my life`,
-      artist: 'Lil Durk, J. Cole',
-      album: 'All my life',
-      genre: 'Trap',
-      duration: '3:43',
-    },
-
-    {
-      id: 16,
-      src: Logo,
-      song: `Trance`,
-      artist: 'Metro Booming',
-      album: 'HEROES & VILLAINS',
-      genre: 'Trap',
-      duration: '3:14',
-    },
-  ]
-
-  // const [songs, setSongs] = useState<SongProps[]>()
-
+export default function Playlist({ type, songsArray, onAdd}: PlaylistType) {
   return (
     <>
       <table className="text-left mt-6">
@@ -194,7 +34,7 @@ export default function Music({ type }: PlaylistType) {
         </thead>
         <tbody className="before:content-['.'] before:text-zinc-900">
           {songsArray.map(
-            ({ artist, album, duration, genre, id, song }, index) => {
+            ({ artist, album, duration, genre, id, song, src }, index) => {
               return (
                 <tr
                   key={id}
@@ -203,7 +43,7 @@ export default function Music({ type }: PlaylistType) {
                   <td className="">
                     <Image
                       className="rounded-sm"
-                      src={Logo}
+                      src={src}
                       width={104}
                       height={104}
                       alt=""
@@ -221,11 +61,11 @@ export default function Music({ type }: PlaylistType) {
                     <div className="flex gap-20">
                       <span>{duration}</span>
                       {type === 'playlist' ? (
-                        <button className="hover:text-red-400">
+                        <button className="hover:text-red-400" onClick={() => onAdd({ artist, album, duration, genre, id, song, src })}>
                           <MinusCircle />
                         </button>
                       ) : (
-                        <button className="hover:text-green-400">
+                        <button className="hover:text-green-400" onClick={() => onAdd({ artist, album, duration, genre, id, song, src })}>
                           <PlusCircle />
                         </button>
                       )}
