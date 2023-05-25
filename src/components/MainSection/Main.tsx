@@ -1,14 +1,15 @@
-"use client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Playlist, { SongProps } from "../Music";
-import Logo from "../../../public/cover.jpg";
-import { useEffect, useState } from "react";
+'use client'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Playlist, { SongProps } from '../Music'
+// @ts-ignore
+import Logo from '../../../public/cover.jpg'
+import { useEffect, useState } from 'react'
 
 type Edge = {
-  id: number;
-  vertices: SongProps[];
-  value: number;
-};
+  id: number
+  vertices: SongProps[]
+  value: number
+}
 
 /**
  * Pesos das semelhanças:
@@ -21,142 +22,142 @@ const songsArray: SongProps[] = [
     id: 1,
     src: Logo,
     song: `Papi's Home`,
-    artist: "Drake",
-    album: "Certified Lover Boy",
-    genre: "Rap",
-    duration: "3:51",
+    artist: 'Drake',
+    album: 'Certified Lover Boy',
+    genre: 'Rap',
+    duration: '3:51',
   },
 
   {
     id: 2,
     src: Logo,
     song: `Search and Rescue`,
-    artist: "Drake",
-    album: "Search and Rescue",
-    genre: "Rap",
-    duration: "4:32",
+    artist: 'Drake',
+    album: 'Search and Rescue',
+    genre: 'Rap',
+    duration: '4:32',
   },
 
   {
     id: 3,
     src: Logo,
     song: `All my life`,
-    artist: "Lil Durk, J. Cole",
-    album: "All my life",
-    genre: "Trap",
-    duration: "3:43",
+    artist: 'Lil Durk, J. Cole',
+    album: 'All my life',
+    genre: 'Trap',
+    duration: '3:43',
   },
 
   {
     id: 4,
     src: Logo,
     song: `Trance`,
-    artist: "Metro Booming",
-    album: "HEROES & VILLAINS",
-    genre: "Trap",
-    duration: "3:14",
+    artist: 'Metro Booming',
+    album: 'HEROES & VILLAINS',
+    genre: 'Trap',
+    duration: '3:14',
   },
 
   {
     id: 6,
     src: Logo,
     song: `De alta`,
-    artist: "Matue",
-    album: "De alta",
-    genre: "Rap",
-    duration: "4:32",
+    artist: 'Matue',
+    album: 'De alta',
+    genre: 'Rap',
+    duration: '4:32',
   },
 
   {
     id: 7,
     src: Logo,
     song: `Maquina do tempo`,
-    artist: "Matue",
-    album: "Maquina do tempo",
-    genre: "Trap",
-    duration: "3:43",
+    artist: 'Matue',
+    album: 'Maquina do tempo',
+    genre: 'Trap',
+    duration: '3:43',
   },
 
   {
     id: 8,
     src: Logo,
     song: `É sal`,
-    artist: "Matue",
-    album: "Maquina do tempo",
-    genre: "Trap",
-    duration: "3:43",
+    artist: 'Matue',
+    album: 'Maquina do tempo',
+    genre: 'Trap',
+    duration: '3:43',
   },
   {
     id: 9,
     src: Logo,
     song: `Stitches`,
-    artist: "Shawn Mendes",
-    album: "Stitches",
-    genre: "Pop",
-    duration: "3:43",
+    artist: 'Shawn Mendes',
+    album: 'Stitches',
+    genre: 'Pop',
+    duration: '3:43',
   },
 
   {
     id: 10,
     src: Logo,
     song: `Nav`,
-    artist: "Jovem dex",
-    album: "Nav",
-    genre: "Trap",
-    duration: "4:32",
+    artist: 'Jovem dex',
+    album: 'Nav',
+    genre: 'Trap',
+    duration: '4:32',
   },
-];
+]
 
 export default function MainSection() {
-  const [playlist, setPlaylist] = useState<SongProps[]>([]);
-  const [similars, setSimilars] = useState<SongProps[]>(songsArray);
+  const [playlist, setPlaylist] = useState<SongProps[]>([])
+  const [similars, setSimilars] = useState<SongProps[]>(songsArray)
 
   const generateEdges = () => {
     return songsArray
       .reduce<Edge[]>((acc, song, cIndex) => {
         for (let i = cIndex + 1; i < songsArray.length - 1; i++) {
-          let value = 0;
+          let value = 0
           if (song.artist === songsArray[i].artist) {
-            value += 3;
+            value += 3
           }
           if (song.album === songsArray[i].album) {
-            value += 2;
+            value += 2
           }
           if (song.genre === songsArray[i].genre) {
-            value += 1;
+            value += 1
           }
 
           acc.push({
             id: cIndex + i + value,
             vertices: [song, songsArray[i]],
             value,
-          });
+          })
         }
-        return acc;
+        return acc
       }, [])
       .sort((a, b) => a.value - b.value)
-      .reverse();
-  };
+      .reverse()
+  }
 
   const generateNewSimilars = () => {
-    const edges = generateEdges();
+    const edges = generateEdges()
     const sortedEdges = () => {
-      let newSortedEdges: Edge[] = [];
+      const newSortedEdges: Edge[] = []
       edges.forEach((edge) => {
         if (
-          (playlist.some(({ id }) => id === edge.vertices[0].id) ||
-          playlist.some(({ id }) => id === edge.vertices[0].id) &&
+          playlist.some(({ id }) => id === edge.vertices[0].id) ||
+          (playlist.some(({ id }) => id === edge.vertices[0].id) &&
             !newSortedEdges.some(({ id }) => id === edge.id))
         ) {
-          newSortedEdges.unshift(edge);
+          newSortedEdges.unshift(edge)
         } else if (!newSortedEdges.some(({ id }) => id === edge.id)) {
-          newSortedEdges.push(edge);
+          newSortedEdges.push(edge)
         }
-      });
-      return newSortedEdges;
-    };
+      })
+      return newSortedEdges
+    }
 
-    console.log(sortedEdges());
+    console.log(sortedEdges())
 
     return sortedEdges()
       .reduce<SongProps[]>((acc, edge) => {
@@ -164,34 +165,34 @@ export default function MainSection() {
           !playlist.some(({ id }) => id === edge.vertices[0].id) &&
           !acc.some(({ id }) => id === edge.vertices[0].id)
         ) {
-          acc.push(edge.vertices[0]);
+          acc.push(edge.vertices[0])
         }
 
         if (
           !playlist.some(({ id }) => id === edge.vertices[1].id) &&
           !acc.some(({ id }) => id === edge.vertices[1].id)
         ) {
-          acc.push(edge.vertices[1]);
+          acc.push(edge.vertices[1])
         }
-        return acc;
+        return acc
       }, [])
-      .reverse();
-  };
+      .reverse()
+  }
 
   const removeSong = (song: SongProps) => {
-    setPlaylist((oldState) => oldState.filter((p) => p.id !== song.id));
-    setSimilars((oldState) => [...oldState, song]);
-  };
+    setPlaylist((oldState) => oldState.filter((p) => p.id !== song.id))
+    setSimilars((oldState) => [...oldState, song])
+  }
 
   const addSong = (song: SongProps) => {
-    setPlaylist((oldState) => [...oldState, song]);
-    setSimilars((oldState) => oldState.filter((p) => p.id !== song.id));
-  };
+    setPlaylist((oldState) => [...oldState, song])
+    setSimilars((oldState) => oldState.filter((p) => p.id !== song.id))
+  }
 
   useEffect(() => {
-    const newSimilars = generateNewSimilars();
-    setSimilars([...newSimilars]);
-  }, [playlist]);
+    const newSimilars = generateNewSimilars()
+    setSimilars([...newSimilars])
+  }, [playlist])
 
   return (
     <main className="flex-1 p-6 max-h-[89.5vh] overflow-y-auto">
@@ -221,5 +222,5 @@ export default function MainSection() {
         </div>
       </div>
     </main>
-  );
+  )
 }

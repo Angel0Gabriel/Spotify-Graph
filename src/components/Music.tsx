@@ -2,7 +2,6 @@ import { MinusCircle, PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
 
-
 export interface SongProps {
   id: number
   src: any
@@ -14,12 +13,12 @@ export interface SongProps {
 }
 
 interface PlaylistType {
-  type: 'playlist' | 'recomendation',
-  songsArray: SongProps[],
-  onAdd: (song: SongProps) => void;
+  type: 'playlist' | 'recomendation'
+  songsArray: SongProps[]
+  onAdd: (song: SongProps) => void
 }
 
-export default function Playlist({ type, songsArray, onAdd}: PlaylistType) {
+export default function Playlist({ type, songsArray, onAdd }: PlaylistType) {
   return (
     <>
       <table className="text-left mt-6">
@@ -61,11 +60,37 @@ export default function Playlist({ type, songsArray, onAdd}: PlaylistType) {
                     <div className="flex gap-20">
                       <span>{duration}</span>
                       {type === 'playlist' ? (
-                        <button className="hover:text-red-400" onClick={() => onAdd({ artist, album, duration, genre, id, song, src })}>
+                        <button
+                          className="hover:text-red-400"
+                          onClick={() =>
+                            onAdd({
+                              artist,
+                              album,
+                              duration,
+                              genre,
+                              id,
+                              song,
+                              src,
+                            })
+                          }
+                        >
                           <MinusCircle />
                         </button>
                       ) : (
-                        <button className="hover:text-green-400" onClick={() => onAdd({ artist, album, duration, genre, id, song, src })}>
+                        <button
+                          className="hover:text-green-400"
+                          onClick={() =>
+                            onAdd({
+                              artist,
+                              album,
+                              duration,
+                              genre,
+                              id,
+                              song,
+                              src,
+                            })
+                          }
+                        >
                           <PlusCircle />
                         </button>
                       )}
