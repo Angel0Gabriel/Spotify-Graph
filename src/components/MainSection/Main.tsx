@@ -1,10 +1,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import TopMenu from './TopMenu'
-import BottomMenu from './BottomMenu'
+import Music from '../Music'
 
 export default function MainSection() {
   return (
-    <main className="flex-1 p-6">
+    <main className="flex-1 p-6 max-h-[89.5vh] overflow-y-auto">
       <div className="flex items-center gap-4">
         <button className="rounded-full bg-black/40 p-1">
           <ChevronLeft />
@@ -15,11 +14,17 @@ export default function MainSection() {
         </button>
       </div>
 
-      <h1 className="font-semibold text-3xl mt-10">Good Afternoon</h1>
-      <TopMenu />
+      <div className="flex justify-around flex-1 w-full">
+        <div className="flex flex-col flex-1 w-1/2 mr-12">
+          <h1 className="font-semibold text-3xl mt-10">Playlist</h1>
+          <Music type="playlist" />
+        </div>
 
-      <h2 className="font-semibold text-2xl mt-10">Made for Angelo Gabriel</h2>
-      <BottomMenu />
+        <div className="flex flex-col flex-2 w-1/2">
+          <h1 className="font-semibold text-3xl mt-10">Recomendações</h1>
+          <Music type="recomendation" />
+        </div>
+      </div>
     </main>
   )
 }
