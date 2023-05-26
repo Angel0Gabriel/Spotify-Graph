@@ -15,10 +15,10 @@ export interface SongProps {
 interface PlaylistType {
   type: 'playlist' | 'recomendation'
   songsArray: SongProps[]
-  onAdd: (song: SongProps) => void
+  onSongPress: (song: SongProps) => void
 }
 
-export default function Playlist({ type, songsArray, onAdd }: PlaylistType) {
+export default function Playlist({ type, songsArray, onSongPress: onAdd }: PlaylistType) {
   return (
     <>
       <table className="text-left mt-6">
