@@ -1,15 +1,8 @@
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Playlist, { SongProps } from "../Music";
-// @ts-ignore
 import Logo from "../../../public/cover.jpg";
-import { useEffect, useState } from "react";
-
-type Edge = {
-  id: number;
-  vertices: SongProps[];
-  value: number;
-};
+import { useState } from "react";
 
 /**
  * Pesos das semelhanças:
@@ -17,6 +10,17 @@ type Edge = {
  * Album: 2,
  * Genero: 1,
  */
+
+type Edge = {
+  id: number;
+  vertices: SongProps[];
+  value: number;
+};
+
+interface RevelanceSong extends SongProps {
+  value: number;
+}
+
 const songsArray: SongProps[] = [
   {
     id: 1,
@@ -96,7 +100,6 @@ const songsArray: SongProps[] = [
     genre: "Pop",
     duration: "3:43",
   },
-
   {
     id: 10,
     src: Logo,
@@ -106,91 +109,55 @@ const songsArray: SongProps[] = [
     genre: "Trap",
     duration: "4:32",
   },
+  {
+    id: 11,
+    src: Logo,
+    song: `Rambo`,
+    artist: "Jovem dex",
+    album: "ETPM",
+    genre: "Trap",
+    duration: "4:32",
+  },
 ];
 
 export default function MainSection() {
   const [playlist, setPlaylist] = useState<SongProps[]>([]);
   const [similars, setSimilars] = useState<SongProps[]>(songsArray);
 
-  const generateEdges = () => {
-    return songsArray
-      .reduce<Edge[]>((acc, song, cIndex) => {
-        for (let i = cIndex + 1; i < songsArray.length - 1; i++) {
-          let value = 0;
-          if (song.artist === songsArray[i].artist) {
+  const mapSimilarsRelevance = () => {
+    return similars
+      .map<RevelanceSong>((song) => {
+        let value = 0;
+        
+        playlist.forEach((playlistSong) => {
+          if (song.artist === playlistSong.artist) {
             value += 3;
           }
-          if (song.album === songsArray[i].album) {
+          if (song.album === playlistSong.album) {
             value += 2;
           }
-          if (song.genre === songsArray[i].genre) {
+          if (song.genre === playlistSong.genre) {
             value += 1;
           }
+        });
 
-          if (value !== 0) {
-            acc.push({
-              id: cIndex + i + value,
-              vertices: [song, songsArray[i]],
-              value,
-            });
-          }
-        }
-        return acc;
-      }, [])
-      .sort((a, b) => a.value - b.value)
-      .reverse();
-  };
-
-  const generateNewSimilars = () => {
-    const edges = generateEdges();
-    const sortedEdges = edges.map((edge) => {
-      const vertexA = edge.vertices[0];
-      const vertexB = edge.vertices[1];
-      const MULTIPLIER = 4;
-
-      if (playlist.some(({ id }) => id === vertexA.id || id === vertexB.id)) {
         return {
-          ...edge,
-          value: edge.value * MULTIPLIER,
+          ...song,
+          value,
         };
-      }
-
-      return edge;
-    });
-
-    return sortedEdges
-      .reduce<SongProps[]>((acc, edge) => {
-        if (
-          !playlist.some(({ id }) => id === edge.vertices[0].id) &&
-          !acc.some(({ id }) => id === edge.vertices[0].id)
-        ) {
-          acc.push(edge.vertices[0]);
-        }
-
-        if (
-          !playlist.some(({ id }) => id === edge.vertices[1].id) &&
-          !acc.some(({ id }) => id === edge.vertices[1].id)
-        ) {
-          acc.push(edge.vertices[1]);
-        }
-        return acc;
-      }, [])
-      .reverse();
+      })
+      .sort((a, b) => b.value - a.value);
   };
 
   const removeSong = (song: SongProps) => {
-    setPlaylist((oldState) => oldState.filter((p) => p.id !== song.id));
     setSimilars((oldState) => [...oldState, song]);
+    setPlaylist((oldState) => oldState.filter((p) => p.song !== song.song));
   };
 
   const addSong = (song: SongProps) => {
+    setSimilars((oldState) => oldState.filter((p) => p.song !== song.song));
     setPlaylist((oldState) => [...oldState, song]);
-    setSimilars((oldState) => oldState.filter((p) => p.id !== song.id));
   };
-
-  useEffect(() => {
-    setSimilars(generateNewSimilars());
-  }, [playlist]);
 
   return (
     <main className="flex-1 p-6 max-h-[89.5vh] overflow-y-auto">
@@ -218,7 +185,7 @@ export default function MainSection() {
           <h1 className="font-semibold text-3xl mt-10">Recomendações</h1>
           <Playlist
             type="recomendation"
-            songsArray={similars}
+            songsArray={mapSimilarsRelevance()}
             onSongPress={addSong}
           />
         </div>
