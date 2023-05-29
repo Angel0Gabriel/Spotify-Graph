@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import { MinusCircle, PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
+import { millisToMinutesAndSeconds } from '@/lib/formatter'
 
 export interface SongProps {
   id: number
@@ -18,7 +20,11 @@ interface PlaylistType {
   onSongPress: (song: SongProps) => void
 }
 
-export default function Playlist({ type, songsArray, onSongPress: onAdd }: PlaylistType) {
+export default function Playlist({
+  type,
+  songsArray,
+  onSongPress: onAdd,
+}: PlaylistType) {
   return (
     <>
       <table className="text-left mt-6">
@@ -33,14 +39,14 @@ export default function Playlist({ type, songsArray, onSongPress: onAdd }: Playl
         </thead>
         <tbody className="before:content-['.'] before:text-zinc-900">
           {songsArray.map(
-            ({ artist, album, duration, genre, id, song, src }, index) => {
+            ({ artist, album, duration, genre, id, song, src }) => {
               return (
                 <tr
                   key={id}
                   className="bg-white/5 hover:bg-white/10 transition-colors"
                 >
                   <td className="">
-                    <Image
+                    <img
                       className="rounded-sm"
                       src={src}
                       width={104}
@@ -58,7 +64,7 @@ export default function Playlist({ type, songsArray, onSongPress: onAdd }: Playl
                   <td className="text-sm text-zinc-400 w-1/5">{genre}</td>
                   <td className="text-sm text-zinc-400 w-1/5">
                     <div className="flex gap-20">
-                      <span>{duration}</span>
+                      <span>{millisToMinutesAndSeconds(Number(duration))}</span>
                       {type === 'playlist' ? (
                         <button
                           className="hover:text-red-400"

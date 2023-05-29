@@ -1,8 +1,11 @@
-"use client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Playlist, { SongProps } from "../Music";
-import Logo from "../../../public/cover.jpg";
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Playlist, { SongProps } from '../Music'
+// @ts-ignore
+import Logo from '../../../public/cover.jpg'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 /**
  * Pesos das semelhanças:
@@ -12,152 +15,110 @@ import { useState } from "react";
  */
 
 type Edge = {
-  id: number;
-  vertices: SongProps[];
-  value: number;
-};
-
-interface RevelanceSong extends SongProps {
-  value: number;
+  id: number
+  vertices: SongProps[]
+  value: number
 }
 
-const songsArray: SongProps[] = [
-  {
-    id: 1,
-    src: Logo,
-    song: `Papi's Home`,
-    artist: "Drake",
-    album: "Certified Lover Boy",
-    genre: "Rap",
-    duration: "3:51",
-  },
-
-  {
-    id: 2,
-    src: Logo,
-    song: `Search and Rescue`,
-    artist: "Drake",
-    album: "Search and Rescue",
-    genre: "Rap",
-    duration: "4:32",
-  },
-
-  {
-    id: 3,
-    src: Logo,
-    song: `All my life`,
-    artist: "Lil Durk, J. Cole",
-    album: "All my life",
-    genre: "Trap",
-    duration: "3:43",
-  },
-
-  {
-    id: 4,
-    src: Logo,
-    song: `Trance`,
-    artist: "Metro Booming",
-    album: "HEROES & VILLAINS",
-    genre: "Trap",
-    duration: "3:14",
-  },
-
-  {
-    id: 6,
-    src: Logo,
-    song: `De alta`,
-    artist: "Matue",
-    album: "De alta",
-    genre: "Rap",
-    duration: "4:32",
-  },
-
-  {
-    id: 7,
-    src: Logo,
-    song: `Maquina do tempo`,
-    artist: "Matue",
-    album: "Maquina do tempo",
-    genre: "Trap",
-    duration: "3:43",
-  },
-
-  {
-    id: 8,
-    src: Logo,
-    song: `É sal`,
-    artist: "Matue",
-    album: "Maquina do tempo",
-    genre: "Trap",
-    duration: "3:43",
-  },
-  {
-    id: 9,
-    src: Logo,
-    song: `Stitches`,
-    artist: "Shawn Mendes",
-    album: "Stitches",
-    genre: "Pop",
-    duration: "3:43",
-  },
-  {
-    id: 10,
-    src: Logo,
-    song: `Nav`,
-    artist: "Jovem dex",
-    album: "Nav",
-    genre: "Trap",
-    duration: "4:32",
-  },
-  {
-    id: 11,
-    src: Logo,
-    song: `Rambo`,
-    artist: "Jovem dex",
-    album: "ETPM",
-    genre: "Trap",
-    duration: "4:32",
-  },
-];
+interface RevelanceSong extends SongProps {
+  value: number
+}
 
 export default function MainSection() {
-  const [playlist, setPlaylist] = useState<SongProps[]>([]);
-  const [similars, setSimilars] = useState<SongProps[]>(songsArray);
+  const [playlist, setPlaylist] = useState<SongProps[]>([])
+  const [similars, setSimilars] = useState<SongProps[]>([])
+
+  const genres = ['rap', 'trap', 'sertanejo', 'pop', 'mpb', 'rock']
+
+  const SPOTIFY_CLIENT_ID = '43605d8686414032be5dbbb5efe68b77'
+  const SPOTIFY_CLIENT_SECRET = '1de9c4f818414f00bd56e3c4cc1b7b21'
+
+  async function getTracks(accessToken: string) {
+    try {
+      const data = await axios.get(
+        'https://api.spotify.com/v1/playlists/3IsxzDS04BvejFJcQ0iVyW',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      )
+      const response = data.data.tracks.items as []
+
+      console.log(response)
+
+      const newTracks = response.map<SongProps>((song: any) => {
+        return {
+          artist: song.track.artists[0]?.name ?? '',
+          album: song.track.album?.name ?? '',
+          duration: song.track.duration_ms ?? '',
+          genre: genres[Math.floor(Math.random() * genres.length)] ?? '',
+          id: song.track.id ?? '',
+          song: song.track?.name ?? '',
+          src: song.track.album.images[0].url ?? '',
+        }
+      })
+      console.log('ola', newTracks)
+      setSimilars(newTracks)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    const authParams = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body:
+        'grant_type=client_credentials&client_id=' +
+        SPOTIFY_CLIENT_ID +
+        '&client_secret=' +
+        SPOTIFY_CLIENT_SECRET,
+    }
+
+    fetch('https://accounts.spotify.com/api/token', authParams)
+      .then((result) => result.json())
+      .then((data) => getTracks(data.access_token))
+  }, [])
+
+  // console.log(accessToken)
 
   const mapSimilarsRelevance = () => {
     return similars
       .map<RevelanceSong>((song) => {
-        let value = 0;
-        
+        let value = 0
+
         playlist.forEach((playlistSong) => {
           if (song.artist === playlistSong.artist) {
-            value += 3;
+            value += 3
           }
           if (song.album === playlistSong.album) {
-            value += 2;
+            value += 2
           }
           if (song.genre === playlistSong.genre) {
-            value += 1;
+            value += 1
           }
-        });
+        })
 
         return {
           ...song,
           value,
-        };
+        }
       })
-      .sort((a, b) => b.value - a.value);
-  };
+      .sort((a, b) => b.value - a.value)
+  }
 
   const removeSong = (song: SongProps) => {
-    setSimilars((oldState) => [...oldState, song]);
-    setPlaylist((oldState) => oldState.filter((p) => p.song !== song.song));
-  };
+    setSimilars((oldState) => [...oldState, song])
+    setPlaylist((oldState) => oldState.filter((p) => p.song !== song.song))
+  }
 
   const addSong = (song: SongProps) => {
-    setSimilars((oldState) => oldState.filter((p) => p.song !== song.song));
-    setPlaylist((oldState) => [...oldState, song]);
-  };
+    setSimilars((oldState) => oldState.filter((p) => p.song !== song.song))
+    setPlaylist((oldState) => [...oldState, song])
+  }
 
   return (
     <main className="flex-1 p-6 max-h-[89.5vh] overflow-y-auto">
@@ -191,5 +152,5 @@ export default function MainSection() {
         </div>
       </div>
     </main>
-  );
+  )
 }
